@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A-Share Scout · 智能A股周度选股平台</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="bg-mesh"></div>
+
+  <!-- ======== 全局模拟数据横幅 ======== -->
+  <div id="mock-banner" class="fixed top-0 left-0 w-full z-[100] bg-amber-500 text-black text-center py-2 px-4 font-bold text-sm flex items-center justify-center gap-2 shadow-lg">
+    <span class="text-lg">⚠️</span>
+    <span>当前所有数据均为 <u>模拟数据（MOCK DATA）</u>，仅供功能演示，不构成任何投资建议！</span>
+    <button onclick="this.parentElement.classList.add('hidden')" class="ml-4 px-2 py-0.5 rounded bg-amber-600 text-white text-xs hover:bg-amber-700 transition">关闭</button>
+  </div>
+
+  <!-- ======== 头部 ======== -->
+  <header class="header mt-10">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">📈</span>
+        <div>
+          <h1 class="text-xl font-bold text-white tracking-tight">A-Share Scout</h1>
+          <p class="text-xs text-slate-400">智能A股周度选股平台</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <p class="text-sm text-slate-300 font-medium" id="week-range"></p>
+          <p class="text-xs text-slate-500" id="update-time"></p>
+        </div>
+        <!-- 模拟数据徽章 -->
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">
+          ⚠ 模拟数据
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- ======== 免责声明 ======== -->
+    <div class="disclaimer fade-in flex items-start gap-3">
+      <span class="text-red-400 text-xl mt-0.5 flex-shrink-0">⚠️</span>
+      <div>
+        <p class="text-red-300 font-semibold text-sm">重要声明</p>
+        <p class="text-slate-400 text-xs leading-relaxed mt-1">
+          本平台所展示的所有数据、分析、推荐均基于<strong class="text-amber-400">模拟数据（MOCK DATA）</strong>，
+          仅供技术演示和学习参考。<strong class="text-red-300">不构成任何投资建议</strong>。
+          股市有风险，投资需谨慎。任何投资决策请咨询专业持牌金融顾问。真实数据接入将在后续版本实现。
+        </p>
+      </div>
+    </div>
+
+    <!-- ======== 本周推荐标题 ======== -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <h2 class="text-2xl font-bold text-white">🏆 本周 TOP 5 推荐</h2>
+        <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-xs border border-amber-500/30">模拟数据</span>
+      </div>
+      <span class="text-slate-500 text-sm">点击卡片查看详细分析 →</span>
+    </div>
+
+    <!-- ======== 股票卡片 ======== -->
+    <div id="stock-cards" class="stock-cards-grid fade-in"></div>
+
+    <!-- ======== 图表 + 详情 ======== -->
+    <div class="main-layout fade-in">
+      <!-- 左侧：图表区 -->
+      <div class="space-y-0">
+        <div class="bg-slate-800/40 rounded-t-xl border border-slate-700/50 border-b-0 p-4 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div>
+              <h3 id="chart-stock-name" class="text-white font-bold text-lg">-</h3>
+            </div>
+            <span id="chart-stock-price" class="text-white text-2xl font-bold">-</span>
+            <span id="chart-stock-change" class="text-sm">-</span>
+          </div>
+          <div id="ma-legend" class="flex items-center gap-4 text-xs"></div>
+        </div>
+        <div id="chart-container" class="bg-[#0f1729] rounded-b-xl border border-slate-700/50 border-t-0"></div>
+        <!-- 图表区模拟数据提示 -->
+        <div class="mt-2 text-center">
+          <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs border border-amber-500/20">
+            <span>📊</span> 图表数据为随机生成的模拟K线，非真实行情
+          </span>
+        </div>
+      </div>
+
+      <!-- 右侧：详情面板 -->
+      <div class="detail-scroll">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-white font-bold">📋 详细分析</h3>
+          <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-xs border border-amber-500/30">模拟</span>
+        </div>
+        <div id="stock-detail"></div>
+      </div>
+    </div>
+
+    <!-- ======== 路线图 ======== -->
+    <div class="mt-8">
+      <div class="flex items-center gap-3 mb-4">
+        <h2 class="text-2xl font-bold text-white">🗺️ 开发路线图</h2>
+        <span class="text-slate-500 text-sm">从 MVP 到完整平台的演进路径</span>
+      </div>
+      <div id="roadmap-container" class="roadmap-grid fade-in"></div>
+    </div>
+
+    <!-- ======== 底部免责 ======== -->
+    <footer class="mt-12 pb-8 text-center space-y-3">
+      <div class="disclaimer inline-block mx-auto">
+        <p class="text-amber-400 text-xs font-bold">⚠️ 所有数据均为模拟数据（MOCK DATA），仅供功能演示，不构成投资建议</p>
+      </div>
+      <div class="text-slate-600 text-xs space-y-1">
+        <p>A-Share Scout · 智能A股周度选股平台 · MVP v0.1.0</p>
+        <p>Built with ❤️ using TradingView Lightweight Charts · Deployed on GitHub Pages</p>
+        <p>
+          <a href="https://github.com/jinyanghe1/a-share-scout" class="text-blue-500 hover:text-blue-400 transition">GitHub Repository</a>
+          <span class="mx-2">·</span>
+          <a href="ROADMAP.md" class="text-blue-500 hover:text-blue-400 transition">完整路线图</a>
+        </p>
+      </div>
+    </footer>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
